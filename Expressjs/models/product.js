@@ -21,7 +21,7 @@ module.exports = class Product{
         })
     }
 
-    static fetchProducts(cb){
+    static fetchAll(cb){
          const p = path.join(dirname,'data','products.json')
         fs.readFile(p,(err, fileContent)=>{
             if(!err){

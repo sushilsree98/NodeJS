@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/error');
 const sequelize = require('./util/database')
+const product = require('./models/product');
+const user = require('./models/user')
 
 const app = express();
 
@@ -22,7 +24,9 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-sequelize.sync()
+product.belongsTo(user,{constraints:true, onDelete:"CASCADE"})
+
+sequelize.sync({force:true})
 .then((result)=>{
     app.listen(3000);
 })

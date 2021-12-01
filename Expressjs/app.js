@@ -5,8 +5,8 @@ const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/error');
 const sequelize = require('./util/database')
-const product = require('./models/product');
-const user = require('./models/user')
+const Product = require('./models/product');
+const User = require('./models/user')
 
 const app = express();
 
@@ -21,13 +21,33 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use((req,res,next)=>{
+    User.findByPk(1)
+     .then(user=>{
+         req.user = user
+         next()
+     })
+})
 
 app.use(errorController.get404);
 
-product.belongsTo(user,{constraints:true, onDelete:"CASCADE"})
 
-sequelize.sync({force:true})
+Product.belongsTo(User,{constraints:true, onDelete:"CASCADE"})
+User.hasMany(Product)
+
+sequelize.sync(
+    // {force:true}
+    )
 .then((result)=>{
+    return User.findByPk(1)
+})
+.then((user)=>{
+    if(!user){
+        return User.create({name:'Sushil', email:'xyz@email.com'})
+    }
+})
+.then(user=>{
+    console.log(user)
     app.listen(3000);
 })
 .catch(err=>{

@@ -53,7 +53,6 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = (req, res, next) => {
   req.user.getCart()
    .then(cart=>{
-     console.log(cart)
      return cart.getProducts()
    })
    .then(products=>{
@@ -86,7 +85,7 @@ exports.postCart = (req, res, next) => {
         //...
       }
 
-      Product.findByPk(prodId)
+      return Product.findByPk(prodId)
        .then(prod => {
         return fetchedCart.addProduct(prod, {
           through: {quantity : newQuantity}
@@ -94,15 +93,28 @@ exports.postCart = (req, res, next) => {
        })
        .catch(err=>console.log(err))
     })
+    .then(()=>{
+      res.redirect('/cart')
+    })
     .catch(err=>{console.log(err)})
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId, product => {
-    Cart.deleteProduct(prodId, product.price);
-    res.redirect('/cart');
-  });
+  req.user.getCart()
+   .then(cart=>{
+     return cart.getProducts({where:{
+       id:prodId
+     }})
+   })
+   .then(products=>{
+     let product = products[0]
+     return product.cartItem.destroy()
+   })
+   .then(()=>{
+     res.redirect('/cart')
+   })
+   .catch(err=>{console.log(err)})
 };
 
 exports.getOrders = (req, res, next) => {

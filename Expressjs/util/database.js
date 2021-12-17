@@ -1,25 +1,31 @@
-const {MongoClient} = require('mongodb')
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
 
-let _db;
-const mongoClient = new MongoClient('mongodb+srv://sushil:sushilnode@cluster0.ngtxl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
-const mongoConnect = (cb) =>{
-  mongoClient.connect()
-  .then((client)=>{
-    _db = client.db()
-    cb()
-  })
-  .catch(err=>{
-    console.log(err)
-    throw err
-  })
-}
+let _db
+
+const mongoConnect = callback => {
+  MongoClient.connect(
+    "mongodb+srv://sushil:sushilnode@cluster0.ngtxl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+  )
+    .then(client => {
+      console.log('Connected!');
+      _db = client.db()
+      callback(client);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
 
 const getDb = () => {
-  if(db){
-    return db
+  if(_db){
+    return _db
   }
-  throw "Database not found"
+  throw "Db not found"
 }
 
 exports.mongoConnect = mongoConnect;
+
+exports.getDb = getDb
+
 exports.getDb = getDb

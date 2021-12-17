@@ -9,7 +9,7 @@ class Product {
 
   save() {
     const db = getDb();
-    db.collections('products').insertOne(this)
+    return db.collection('products').insertOne(this)
     .then(res => {
       console.log(res)
     })

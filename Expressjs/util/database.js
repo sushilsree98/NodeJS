@@ -8,7 +8,6 @@ const mongoConnect = callback => {
     "mongodb+srv://sushil:sushilnode@cluster0.ngtxl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
   )
     .then(client => {
-      console.log('Connected!');
       _db = client.db()
       callback(client);
     })

@@ -1,6 +1,15 @@
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer')
 
 const User = require('../models/user');
+
+const transporter = nodemailer.createTransport({
+  service:'gmail',
+  auth:{
+    user: 'sushil.sree98@gmail.com',
+    pass:'hacsnmzvjwnovprs'
+  }
+})
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash('error');
@@ -83,7 +92,16 @@ exports.postSignup = (req, res, next) => {
         })
         .then(result => {
           res.redirect('/login');
-        });
+          return transporter.sendMail({
+            from: 'sushil.sree98@gmail.com',
+            to: email,
+            subject: 'Sending Email using Node.js',
+            text: 'Email created successfully'
+          })
+        })
+        .catch(err=>{
+          console.log(err)
+        })
     })
     .catch(err => {
       console.log(err);
@@ -96,3 +114,17 @@ exports.postLogout = (req, res, next) => {
     res.redirect('/');
   });
 };
+
+exports.getReset = (req, res, next) => {
+  let message = req.flash('error');
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+  res.render('auth/reset', {
+    path: '/reset',
+    pageTitle: 'Reset Password',
+    errorMessage: message
+  });
+}
